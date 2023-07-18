@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CRUD Form</title>
+    <style>
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th, td {
+        padding: 8px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+      }
+
+      .btn {
+        margin-top: 10px;
+        padding: 8px 16px;
+        background-color: blue;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+
+      .btn:hover {
+        background-color: #45a049;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>CRUD Form</h2>
+
+    <form id="myForm">
+      <input type="text" id="name" placeholder="Name" />
+      <input type="text" id="password" placeholder="password" />
+      <button type="button" onclick="createOrUpdate()">Save</button>
+      <button type="button" onclick="clearForm()">Clear</button>
+    </form>
+
+    <table id="myTable">
+      <tr>
+        <th>Name</th>
+        <th>password</th>
+        <th>Actions</th>
+      </tr>
+    </table>
+
+
+
+
+    
+
+    <script>
+      let users = [];
+
+      function createOrUpdate() {
+        const nameInput = document.getElementById("name");
+        const passwordInput = document.getElementById("password");
+
+        const name = nameInput.value;
+        const password = passwordInput.value;
+
+        if (name && password) {
+          const user = { name, password };
+          const existingUserIndex = users.findIndex(u => u.password === password);
+
+          if (existingUserIndex !== -1) {
+            // Update existing user
+            users[existingUserIndex] = user;
+          } else {
+            // Create new user
+            users.push(user);
+          }
+
+          renderTable();
+          clearForm();
+        }
+      }
+
+      function deleteUser(password) {
+        const userIndex = users.findIndex(u => u.password === password);
+
+        if (userIndex !== -1) {
+          users.splice(userIndex, 1);
+          renderTable();
+        }
+      }
+
+      function editUser(password) {
+        const user = users.find(u => u.password === password);
+
+        if (user) {
+          const nameInput = document.getElementById("name");
+          const passwordInput = document.getElementById("password");
+
+          nameInput.value = user.name;
+          passwordInput.value = user.password;
+        }
+      }
+
+      function renderTable() {
+        const table = document.getElementById("myTable");
+
+        // Clear existing table rows
+        while (table.rows.length > 1) {
+          table.deleteRow(1);
+        }
+
+        // Render new table rows
+        for (const user of users) {
+          const row = table.insertRow();
+          const nameCell = row.insertCell();
+          const passwordCell = row.insertCell();
+          const actionsCell = row.insertCell();
+
+          nameCell.innerText = user.name;
+          passwordCell.innerText = user.password;
+          actionsCell.innerHTML = `
+            <button class="btn" onclick="editUser('${user.email}')">Edit</button>
+            <button class="btn" onclick="deleteUser('${user.email}')">Delete</button>
+          `;
+        }
+      }
+
+      function clearForm() {
+        document.getElementById("myForm").reset();
+      }
+    </script>
+  </body>
+</html>
